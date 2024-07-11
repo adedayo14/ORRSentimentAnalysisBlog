@@ -304,3 +304,6 @@ td {
   animation: underline 2s ease forwards;
 }
 
+.reset-button {
+  border: 2px solid red !important;
+}

@@ -33,7 +33,7 @@ const Navigation = ({ setCurrentSection, currentSection, clearAllData }) => {
           onClick={clearAllData}
           className="flex-1 text-center font-semibold relative"
         >
-          <span className="inline-block px-12 py-2 rounded-full transition-all duration-300 border border-red-600 bg-white text-red-600 hover:bg-red-600 hover:text-white">
+          <span className="inline-block px-12 py-2 rounded-full transition-all duration-300 border reset-button bg-white text-red-600 hover:bg-red-600 hover:text-white">
             RESET
           </span>
         </button>

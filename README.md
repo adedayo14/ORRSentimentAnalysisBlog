@@ -22,8 +22,9 @@ This is a sentiment analysis application built with Next.js, designed to classif
 First, clone the repository and navigate to the project directory:
 
 ```bash
-git clone https://github.com/adedayo14/aisentimentanalysis.git
-cd aisentimentanalysis
+git clone https://github.com/adedayo14/ORRSentimentAnalysisBlog.git
+cd ORRSentimentAnalysisBlog
+
 ```
 
 ## Install dependencies:

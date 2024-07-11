@@ -1,20 +1,18 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import UploadSection from './components/UploadSection';
 import InputSection from './components/InputSection';
 import OutputSection from './components/OutputSection';
 import Navigation from './components/Navigation';
-import PasswordPrompt from './components/PasswordPrompt';
 
 const Home = () => {
-  const [currentSection, setCurrentSection] = useState('train'); // Start with 'train' by default
-  const [inputs, setInputs] = useState([]); // State for inputs
-  const [trainingExamples, setTrainingExamples] = useState([]); // State for training examples
-  const [output, setOutput] = useState([]); // State for outputs
-  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
-  const [loading, setLoading] = useState(false); // State for loading
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // State for password authentication
+  const [currentSection, setCurrentSection] = useState('train');
+  const [inputs, setInputs] = useState([]);
+  const [trainingExamples, setTrainingExamples] = useState([]);
+  const [output, setOutput] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleTrainingComplete = (examples) => {
     setTrainingExamples(examples);
@@ -39,7 +37,7 @@ const Home = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ inputs, examples: validExamples }), // Ensure to send examples with inputs
+        body: JSON.stringify({ inputs, examples: validExamples }),
       });
 
       const data = await response.json();
@@ -65,17 +63,8 @@ const Home = () => {
     setLoading(false);
   };
 
-  const handlePasswordSubmit = (password) => {
-    const correctPassword = 'Adedayo'; // Replace with your actual password
-    if (password === correctPassword) {
-      setIsAuthenticated(true);
-    } else {
-      alert('Incorrect password');
-    }
-  };
-
   const renderSection = () => {
-    switch (currentSection) {
+    switch(currentSection) {
       case 'train':
         return <UploadSection onTrainingComplete={handleTrainingComplete} trainingExamples={trainingExamples} />;
       case 'upload':
@@ -83,16 +72,17 @@ const Home = () => {
       case 'results':
         return <OutputSection output={output} errorMessage={errorMessage} loading={loading} />;
       default:
-        return <h1 className="text-3xl font-bold text-center mt-12">Welcome to Sentiment Analysis Tool</h1>;
+        return <h1 className="text-3xl font-bold text-center mt-12">Welcome to Sentiment Analysis </h1>;
     }
   };
 
-  if (!isAuthenticated) {
-    return <PasswordPrompt onPasswordSubmit={handlePasswordSubmit} />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col relative">
+      <header className="bg-white">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 animate-underline">Sentiment Analysis </h1>
+        </div>
+      </header>
       <div className="flex-grow overflow-auto p-4">
         {renderSection()}
       </div>

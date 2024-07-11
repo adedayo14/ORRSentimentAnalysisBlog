@@ -5,6 +5,7 @@ import UploadSection from './components/UploadSection';
 import InputSection from './components/InputSection';
 import OutputSection from './components/OutputSection';
 import Navigation from './components/Navigation';
+import PasswordPrompt from './components/PasswordPrompt';
 
 const Home = () => {
   const [currentSection, setCurrentSection] = useState('train');
@@ -13,6 +14,15 @@ const Home = () => {
   const [output, setOutput] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const handlePasswordSubmit = (password) => {
+    if (password === process.env.NEXT_PUBLIC_PASSWORD) {
+      setAuthenticated(true);
+    } else {
+      setErrorMessage('Invalid password');
+    }
+  };
 
   const handleTrainingComplete = (examples) => {
     setTrainingExamples(examples);
@@ -64,6 +74,10 @@ const Home = () => {
   };
 
   const renderSection = () => {
+    if (!authenticated) {
+      return <PasswordPrompt onPasswordSubmit={handlePasswordSubmit} />;
+    }
+
     switch(currentSection) {
       case 'train':
         return <UploadSection onTrainingComplete={handleTrainingComplete} trainingExamples={trainingExamples} />;
@@ -72,7 +86,7 @@ const Home = () => {
       case 'results':
         return <OutputSection output={output} errorMessage={errorMessage} loading={loading} />;
       default:
-        return <h1 className="text-3xl font-bold text-center mt-12">Welcome to Sentiment Analysis </h1>;
+        return <h1 className="text-3xl font-bold text-center mt-12">Welcome to Sentiment Analysis Tool</h1>;
     }
   };
 
@@ -80,17 +94,19 @@ const Home = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col relative">
       <header className="bg-white">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 animate-underline">Sentiment Analysis </h1>
+          <h1 className="text-3xl font-bold text-gray-900 animate-underline">Sentiment Analysis Tool</h1>
         </div>
       </header>
       <div className="flex-grow overflow-auto p-4">
         {renderSection()}
       </div>
-      <Navigation 
-        setCurrentSection={setCurrentSection} 
-        currentSection={currentSection} 
-        clearAllData={clearAllData} 
-      />
+      {authenticated && (
+        <Navigation 
+          setCurrentSection={setCurrentSection} 
+          currentSection={currentSection} 
+          clearAllData={clearAllData} 
+        />
+      )}
     </div>
   );
 };

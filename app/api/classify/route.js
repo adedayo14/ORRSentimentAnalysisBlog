@@ -5,38 +5,52 @@ const cohere = new CohereClient({
   token: process.env.COHERE_API_KEY, // Ensure this is set in your .env.local file
 });
 
+// Helper function to chunk an array
+const chunkArray = (array, size) => {
+  const result = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+};
+
 export async function POST(req) {
   try {
     const { inputs, examples } = await req.json();
-    console.log('Received inputs:', inputs);
-    console.log('Received examples:', examples);
+    console.log('Received inputs:', inputs.length);
+    console.log('Received examples:', examples.length);
 
-    // Ensure inputs and examples are in the correct format
     if (!Array.isArray(inputs) || !Array.isArray(examples)) {
       throw new Error('Invalid data format: inputs and examples should be arrays');
     }
 
-    // Check each example object
     examples.forEach(example => {
-      if (typeof example.text !== 'string' || typeof example.label !== 'string') {
-        throw new Error('Invalid example format: each example should have text and label properties as strings');
+      if (typeof example.text !== 'string' || example.text.trim() === '') {
+        throw new Error('Invalid example format: each example should have non-empty text property as string');
+      }
+      if (typeof example.label !== 'string' || example.label.trim() === '') {
+        throw new Error('Invalid example format: each example should have non-empty label property as string');
       }
     });
 
-    // Limit inputs to the first 50 sentences
-    const limitedInputs = inputs.slice(0, 50);
+    const inputChunks = chunkArray(inputs, 96);
+    const allClassifications = [];
 
-    const response = await cohere.classify({
-      model: 'embed-english-v2.0',
-      inputs: limitedInputs,
-      examples,
-    });
+    for (const chunk of inputChunks) {
+      const response = await cohere.classify({
+        model: 'embed-english-v2.0',
+        inputs: chunk,
+        examples,
+      });
 
-    console.log('Cohere response:', response.classifications);
-    return NextResponse.json(response.classifications.map(classification => ({
+      allClassifications.push(...response.classifications);
+    }
+
+    console.log('Cohere response:', allClassifications);
+    return NextResponse.json(allClassifications.map(classification => ({
       text: classification.input,
       prediction: classification.prediction,
-      confidences: classification.confidences
+      confidence: classification.confidences[0] // Use the first confidence value
     })));
   } catch (error) {
     console.error('Error in classification:', error.message);
